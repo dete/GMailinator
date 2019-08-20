@@ -7,10 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SearchManager.h"
 
 @interface GMailinator : NSObject {
-    SearchManager* sm;
 }
 
 + (void)registerBundle;

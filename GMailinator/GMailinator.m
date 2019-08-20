@@ -12,22 +12,6 @@ NSBundle *GetGMailinatorBundle(void)
 
 + (void)initialize {
     [GMailinator registerBundle];
-    SearchManager* sm = [[SearchManager alloc] init];
-    [sm setContextMenu: nil];
-    objc_setAssociatedObject(GetGMailinatorBundle(),
-                             @"searchManager",
-                             sm,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-+ (void)logAllSelectorsFromClass:(Class)cls {
-    unsigned int methodCount = 0;
-    Method * methodlist = class_copyMethodList(cls, &methodCount);
-
-    NSLog(@"Class '%s' has %d methods", class_getName(cls), methodCount);
-    for(int i = 0; i < methodCount; ++i) {
-        NSLog(@"Method no #%d: %s", i, sel_getName(method_getName(methodlist[i])));
-    }
 }
 
 /**
@@ -35,10 +19,6 @@ NSBundle *GetGMailinatorBundle(void)
  * keyDown:.
  */
 + (void)setupClass:(Class)cls swappingKeyDownWith:(SEL)overrideSelector {
-    if (DEBUG) {
-        [self logAllSelectorsFromClass:cls];
-    }
-
     if (cls == nil) return;
 
     // Helper methods
@@ -100,49 +80,12 @@ NSBundle *GetGMailinatorBundle(void)
     BOOL performed = YES;
 
     switch (key) {
-        case '#': {
+        case 'd': {
             [messageViewer performSelector:@selector(deleteMessages:) withObject:nil];
             break;
         }
-        case 'a': {
-            [messageViewer performSelector:@selector(replyAllMessage:) withObject:nil];
-            break;
-        }
-        case 'c': {
-            [messageViewer performSelector:@selector(showComposeWindow:) withObject:nil];
-            break;
-        }
-        case 'e':
-        case 'y': {
+        case 'e': {
             [messageViewer performSelector:@selector(archiveMessages:) withObject:nil];
-            break;
-        }
-        case 'f': {
-            [messageViewer performSelector:@selector(forwardMessage:) withObject:nil];
-            break;
-        }
-        case 'o': {
-            [messageViewer performSelector:@selector(openMessages:) withObject:nil];
-            break;
-        }
-        case 'R': {
-            [messageViewer performSelector:@selector(checkNewMail:) withObject:nil];
-            break;
-        }
-        case 'r': {
-            [messageViewer performSelector:@selector(replyMessage:) withObject:nil];
-            break;
-        }
-        case 's': {
-            [messageViewer performSelector:@selector(toggleFlaggedStatus:) withObject:nil];
-            break;
-        }
-        case 'u': {
-            [messageViewer performSelector:@selector(markAsRead:) withObject:nil];
-            break;
-        }
-        case 'U': {
-            [messageViewer performSelector:@selector(markAsUnread:) withObject:nil];
             break;
         }
         default:
@@ -165,30 +108,6 @@ NSBundle *GetGMailinatorBundle(void)
     CGEventRef cgEvent = NULL;
 
     switch (key) {
-        case '!': { // mark message as Spam
-            cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_ANSI_J, true);
-            CGEventSetFlags(cgEvent, kCGEventFlagMaskCommand | kCGEventFlagMaskShift);
-            newEvent = [NSEvent eventWithCGEvent: cgEvent];
-            break;
-        }
-        case '/': { // go to search field
-            cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_ANSI_F, true);
-            CGEventSetFlags(cgEvent, kCGEventFlagMaskCommand | kCGEventFlagMaskAlternate);
-            newEvent = [NSEvent eventWithCGEvent: cgEvent];
-            break;
-        }
-        case 'g': { // go to the beginning of the list
-            cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_UpArrow, true);
-            CGEventSetFlags(cgEvent, kCGEventFlagMaskAlternate | kCGEventFlagMaskControl);
-            newEvent = [NSEvent eventWithCGEvent: cgEvent];
-            break;
-        }
-        case 'G': { // go to the end of the list
-            cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_DownArrow, true);
-            CGEventSetFlags(cgEvent, kCGEventFlagMaskAlternate | kCGEventFlagMaskControl);
-            newEvent = [NSEvent eventWithCGEvent: cgEvent];
-            break;
-        }
         case 'j': { // next message (down)
             cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_DownArrow, true);
             newEvent = [NSEvent eventWithCGEvent: cgEvent];
@@ -208,18 +127,6 @@ NSBundle *GetGMailinatorBundle(void)
         case 'K': { // expand selection to previous message (up)
             cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_UpArrow, true);
             CGEventSetFlags(cgEvent, kCGEventFlagMaskShift);
-            newEvent = [NSEvent eventWithCGEvent: cgEvent];
-            break;
-        }
-       // case 'v': { // view raw message
-       //     cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_ANSI_U, true);
-       //     CGEventSetFlags(cgEvent, kCGEventFlagMaskCommand | kCGEventFlagMaskAlternate);
-       //     newEvent = [NSEvent eventWithCGEvent: cgEvent];
-       //     break;
-      //  }
-        case 'z': { // undo
-            cgEvent = CGEventCreateKeyboardEvent(NULL, kVK_ANSI_Z, true);
-            CGEventSetFlags(cgEvent, kCGEventFlagMaskCommand);
             newEvent = [NSEvent eventWithCGEvent: cgEvent];
             break;
         }
